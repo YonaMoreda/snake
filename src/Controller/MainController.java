@@ -1,12 +1,18 @@
 package Controller;
 
 import java.lang.Math;
+
+import Model.Direction;
+import Model.MainModel;
 import Model.Snake;
+import com.sun.tools.javac.Main;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -18,13 +24,16 @@ public class MainController {
 
     @FXML
     private GridPane center_grid;
-    private Snake snakeModel;
+    private MainModel mainModel;
+    //    private Snake snakeModel;
     private int GRID_SIZE = 14;
 
     @FXML
     public void initialize() {
-        snakeModel = new Snake();
+
+        mainModel = new MainModel();
         GRID_SIZE = center_grid.getRowCount();
+        setSceneKeyPressedAction();
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -32,12 +41,30 @@ public class MainController {
             public void run() {
                 Platform.runLater(() -> {
                     paintSnake();
-                    if (!snakeModel.move()) {
+
+                    if (!mainModel.moveSnake()) {
                         timer.cancel();
                     }
                 });
             }
         }, 0, 1000);
+    }
+
+    private void setSceneKeyPressedAction() {
+        center_grid.setOnKeyPressed(actionEvent -> {
+            if (actionEvent.getCode().equals(KeyCode.R)) {
+                System.out.println("Restart");
+            }
+            switch (actionEvent.getCode()) {
+                case A -> {
+                    mainModel.getSnakeModel().setDirection(Direction.UP);
+                    System.out.println("LMAO");
+                }
+                case DOWN -> mainModel.getSnakeModel().setDirection(Direction.DOWN);
+                case LEFT -> mainModel.getSnakeModel().setDirection(Direction.LEFT);
+                case RIGHT -> mainModel.getSnakeModel().setDirection(Direction.RIGHT);
+            }
+        });
     }
 
     private void paintSnake() {
@@ -49,7 +76,7 @@ public class MainController {
         double cellHeight = center_grid.getHeight() / GRID_SIZE;
 //        System.out.println("painting snake: " + center_grid.getWidth() + " " + center_grid.getHeight());
 
-        for (Point2D bodyPart : snakeModel.getBody()) {
+        for (Point2D bodyPart : mainModel.getSnakeModel().getBody()) {
             Rectangle rectangle = new Rectangle(cellWidth - 10, cellHeight - 10, Color.GREEN);
             GridPane.setHalignment(rectangle, HPos.CENTER);
             int col = (int) Math.round(bodyPart.getX() * 14);
@@ -57,5 +84,15 @@ public class MainController {
 //            System.out.println(col + " " + row);
             center_grid.add(rectangle, col, row); //c, r
         }
+    }
+
+    private void paintFood() {
+        int col = (int) Math.floor(mainModel.getFood().getX() * GRID_SIZE);
+        int row = (int) Math.floor(mainModel.getFood().getY() * GRID_SIZE);
+        double cellWidth = center_grid.getWidth() / GRID_SIZE;
+        double cellHeight = center_grid.getHeight() / GRID_SIZE;
+        Rectangle rectangle = new Rectangle(cellWidth - 10, cellHeight - 10, Color.GREEN);
+        GridPane.setHalignment(rectangle, HPos.CENTER);
+        center_grid.add(rectangle, col, row);
     }
 }

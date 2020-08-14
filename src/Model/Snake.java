@@ -1,5 +1,6 @@
 package Model;
 
+import com.sun.javafx.scene.paint.GradientUtils;
 import javafx.geometry.Point2D;
 
 import java.util.LinkedList;
@@ -33,14 +34,14 @@ public class Snake {
     }
 
     //todo:: generalize the 14
-    public boolean move() {
+    protected boolean move() {
         System.out.println("moving snake");
         Point2D delta = delta();
         for (int i = 0; i < body.size(); i++) {
             Point2D bodyPart = body.remove();
-            System.out.println("bodyPart before " + bodyPart);
+//            System.out.println("bodyPart before " + bodyPart);
             bodyPart = bodyPart.add(delta.getX() / 14, delta.getY() / 14);
-            System.out.println("bodyPart after " + bodyPart);
+//            System.out.println("bodyPart after " + bodyPart);
             if (bodyPart.getX() < -1 || bodyPart.getX() > 1 || bodyPart.getY() < -1 || bodyPart.getY() > 1) {
                 System.out.println("Game Over");
                 return false;
@@ -50,8 +51,22 @@ public class Snake {
         return true;
     }
 
+    public void grow() {
+        switch (direction) {
+            case UP -> {
+//                Point2D newBodyPart = new Point2D()
+            }
+        }
+    }
+
     public Queue<Point2D> getBody() {
         return body;
     }
 
+    public boolean eats(Food food) {
+        for(Point2D bodyPart : body) {
+
+        }
+        return false;
+    }
 }
