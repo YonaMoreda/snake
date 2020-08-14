@@ -32,13 +32,20 @@ public class Snake {
         };
     }
 
+    //todo:: generalize the 14
     public boolean move() {
+        System.out.println("moving snake");
         Point2D delta = delta();
-        for (Point2D bodyPart : body) {
-            bodyPart.add(delta.getX() / 7, delta.getY() / 7); // todo:: generalize this 7
+        for (int i = 0; i < body.size(); i++) {
+            Point2D bodyPart = body.remove();
+            System.out.println("bodyPart before " + bodyPart);
+            bodyPart = bodyPart.add(delta.getX() / 14, delta.getY() / 14);
+            System.out.println("bodyPart after " + bodyPart);
             if (bodyPart.getX() < -1 || bodyPart.getX() > 1 || bodyPart.getY() < -1 || bodyPart.getY() > 1) {
+                System.out.println("Game Over");
                 return false;
             }
+            body.add(bodyPart);
         }
         return true;
     }
