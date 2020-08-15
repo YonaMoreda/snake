@@ -5,6 +5,7 @@ import java.lang.Math;
 import Model.Direction;
 import Model.MainModel;
 import Model.Snake;
+import View.FoodView;
 import com.sun.tools.javac.Main;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -13,6 +14,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -28,12 +31,20 @@ public class MainController {
     //    private Snake snakeModel;
     private int GRID_SIZE = 14;
 
+    int foodColPos;
+    int foodRowPos;
+
+
     @FXML
     public void initialize() {
 
-        mainModel = new MainModel();
+        mainModel = new MainModel(this);
+
+        foodColPos = (int) Math.round(mainModel.getFood().getX() * GRID_SIZE);
+        foodRowPos = (int) Math.round(mainModel.getFood().getY() * GRID_SIZE);
+
         GRID_SIZE = center_grid.getRowCount();
-        setSceneKeyPressedAction();
+
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -41,31 +52,18 @@ public class MainController {
             public void run() {
                 Platform.runLater(() -> {
                     paintSnake();
-
+                    paintFood();
                     if (!mainModel.moveSnake()) {
                         timer.cancel();
                     }
                 });
             }
-        }, 0, 1000);
+        }, 0, 250);
     }
 
-    private void setSceneKeyPressedAction() {
-        center_grid.setOnKeyPressed(actionEvent -> {
-            if (actionEvent.getCode().equals(KeyCode.R)) {
-                System.out.println("Restart");
-            }
-            switch (actionEvent.getCode()) {
-                case A -> {
-                    mainModel.getSnakeModel().setDirection(Direction.UP);
-                    System.out.println("LMAO");
-                }
-                case DOWN -> mainModel.getSnakeModel().setDirection(Direction.DOWN);
-                case LEFT -> mainModel.getSnakeModel().setDirection(Direction.LEFT);
-                case RIGHT -> mainModel.getSnakeModel().setDirection(Direction.RIGHT);
-            }
-        });
-    }
+//    private void setSceneKeyPressedAction() {
+
+//    }
 
     private void paintSnake() {
         Node node = center_grid.getChildren().get(0);
@@ -86,13 +84,49 @@ public class MainController {
         }
     }
 
-    private void paintFood() {
-        int col = (int) Math.floor(mainModel.getFood().getX() * GRID_SIZE);
-        int row = (int) Math.floor(mainModel.getFood().getY() * GRID_SIZE);
+    public void notifyFoodConsumed() {
+        foodColPos = (int) Math.round(mainModel.getFood().getX() * GRID_SIZE);
+        foodRowPos = (int) Math.round(mainModel.getFood().getY() * GRID_SIZE);
+        paintFood();
+    }
+
+    public void paintFood() {
+        for (Node node : center_grid.getChildren()) {
+            if (node instanceof FoodView) {
+                center_grid.getChildren().remove(node);
+                break;
+            }
+        }
+
         double cellWidth = center_grid.getWidth() / GRID_SIZE;
         double cellHeight = center_grid.getHeight() / GRID_SIZE;
-        Rectangle rectangle = new Rectangle(cellWidth - 10, cellHeight - 10, Color.GREEN);
-        GridPane.setHalignment(rectangle, HPos.CENTER);
-        center_grid.add(rectangle, col, row);
+        FoodView foodView = new FoodView(cellWidth - 10, cellHeight - 10, Color.RED);
+        center_grid.add(foodView, foodColPos, foodRowPos);
+    }
+
+    public void grid_pane_key_pressed(KeyEvent keyEvent) {
+
+        if (keyEvent.getCode().equals(KeyCode.R)) {
+            System.out.println("Restart");
+        }
+        switch (keyEvent.getCode()) {
+            case UP, W -> {
+                mainModel.getSnakeModel().setDirection(Direction.UP);
+//                System.out.println("UP");
+            }
+            case DOWN, S -> {
+                mainModel.getSnakeModel().setDirection(Direction.DOWN);
+//                System.out.println("DOWN");
+            }
+            case LEFT, A -> {
+                mainModel.getSnakeModel().setDirection(Direction.LEFT);
+//                System.out.println("LEFT");
+            }
+            case RIGHT, D -> {
+                mainModel.getSnakeModel().setDirection(Direction.RIGHT);
+//                System.out.println("RIGHT");
+            }
+        }
+
     }
 }
