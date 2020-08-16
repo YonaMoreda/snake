@@ -21,7 +21,25 @@ public class Snake {
     }
 
     public void setDirection(Direction direction) {
-        this.direction = direction;
+        if (!areOpposites(this.direction, direction)) {
+            this.direction = direction;
+        }
+    }
+
+    private boolean areOpposites(Direction direction, Direction direction1) {
+        if (direction.equals(Direction.UP) && direction1.equals(Direction.DOWN)) {
+            return true;
+        }
+        if (direction.equals(Direction.DOWN) && direction1.equals(Direction.UP)) {
+            return true;
+        }
+        if (direction.equals(Direction.LEFT) && direction1.equals(Direction.RIGHT)) {
+            return true;
+        }
+        if (direction.equals(Direction.RIGHT) && direction1.equals(Direction.LEFT)) {
+            return true;
+        }
+        return false;
     }
 
     private Point2D delta() {
@@ -33,15 +51,18 @@ public class Snake {
         };
     }
 
-    //todo:: generalize the 14
+    //todo:: generalize the number 14
     protected boolean move() {
-//        System.out.println("moving snake");
-
         Point2D delta = delta();
         Point2D bodyPartOld = body.remove();
         Point2D newBodyPart = bodyPartOld.add(delta.getX() / 14, delta.getY() / 14);
 
-        if (newBodyPart.getX() < -1 || newBodyPart.getX() > 1 || newBodyPart.getY() < -1 || newBodyPart.getY() > 1) {
+        if (newBodyPart.getX() < 0 || newBodyPart.getX() > 1 || newBodyPart.getY() < 0 || newBodyPart.getY() > 1) {
+            System.out.println("Game Over");
+            return false;
+        }
+
+        if (collides(newBodyPart, body)) {
             System.out.println("Game Over");
             return false;
         }
@@ -50,14 +71,21 @@ public class Snake {
         for (int i = 1; i < body.size(); i++) {
             body.add(lastBodyPart);
             newBodyPart = body.remove();
-//            bodyPart = bodyPart.add(delta.getX() / 14, delta.getY() / 14);
             lastBodyPart = newBodyPart;
         }
         return true;
     }
 
+    private boolean collides(Point2D newBodyPart, Queue<Point2D> body) {
+        for (Point2D bodyPart : body) {
+            if(newBodyPart.getX() == bodyPart.getX() && newBodyPart.getY() == bodyPart.getY()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void grow() {
-        System.out.println("growing snake");
         Point2D delta = delta();
         Point2D newBody = lastBodyPart.add(delta.getX() / 14, delta.getY() / 14);
         body.add(newBody);
@@ -68,21 +96,13 @@ public class Snake {
         return body;
     }
 
-    public boolean eats(Food food) {
-
-        int foodCol = (int) Math.round(food.getX() * 14);
-        int foodRow = (int) Math.round(food.getY() * 14);
-
+    public boolean eats(int foodCol, int foodRow) {
         for (Point2D bodyPart : body) {
             int bodyPartCol = (int) Math.round(bodyPart.getX() * 14);
             int bodyPartRow = (int) Math.round(bodyPart.getY() * 14);
-
-            System.out.println("Eating! " + bodyPartCol + " == " + foodCol + ", " + bodyPartRow + " == " + foodRow);
             if (bodyPartRow == foodRow && bodyPartCol == foodCol) {
-//                System.out.println("Eating! " + bodyPart.getX() + " - " + food.getX() + " = " + Math.abs(bodyPart.getX() - food.getX()));
                 return true;
             }
-//            System.out.println("Not eating! " + bodyPart.getX() + " - " + food.getX() + " = " + Math.abs(bodyPart.getX() - food.getX()));
         }
         return false;
     }

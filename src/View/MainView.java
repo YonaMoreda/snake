@@ -2,7 +2,6 @@ package View;
 
 import Controller.MainController;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,6 +9,9 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 
+/**
+ * MainView of the game
+ */
 public class MainView extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -24,8 +26,6 @@ public class MainView extends Application {
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(new Image("snake.png"));
         primaryStage.show();
-        scene.getRoot().requestFocus();
-        //TODO:: attribution
-        // Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+        scene.getRoot().requestFocus(); //TODO:: attribution Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
     }
 }

@@ -24,7 +24,7 @@ public class MainModel {
 
     public boolean moveSnake() {
         boolean isGameOver = snakeModel.move();
-        if(snakeModel.eats(food)) {
+        if(snakeModel.eats(controller.getFoodColPos(), controller.getFoodRowPos())) {
             snakeModel.grow();
             food = new Food();
             controller.notifyFoodConsumed();
