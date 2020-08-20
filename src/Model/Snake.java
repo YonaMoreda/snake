@@ -55,10 +55,10 @@ public class Snake {
     protected boolean move() {
         Point2D delta = delta();
         Point2D bodyPartOld = body.remove();
-        Point2D newBodyPart = bodyPartOld.add(delta.getX() / 14, delta.getY() / 14);
+        Point2D newBodyPart = bodyPartOld.add(delta.getX() / 21, delta.getY() / 21);
 
         if (newBodyPart.getX() < 0 || newBodyPart.getX() > 1 || newBodyPart.getY() < 0 || newBodyPart.getY() > 1) {
-            System.out.println("Game Over");
+            System.out.println("Game Over! collision");
             return false;
         }
 
@@ -87,7 +87,7 @@ public class Snake {
 
     public void grow() {
         Point2D delta = delta();
-        Point2D newBody = lastBodyPart.add(delta.getX() / 14, delta.getY() / 14);
+        Point2D newBody = lastBodyPart.add(delta.getX() / 21, delta.getY() / 21);
         body.add(newBody);
         lastBodyPart = newBody;
     }
@@ -98,8 +98,8 @@ public class Snake {
 
     public boolean eats(int foodCol, int foodRow) {
         for (Point2D bodyPart : body) {
-            int bodyPartCol = (int) Math.round(bodyPart.getX() * 14);
-            int bodyPartRow = (int) Math.round(bodyPart.getY() * 14);
+            int bodyPartCol = (int) Math.round(bodyPart.getX() * 21);
+            int bodyPartRow = (int) Math.round(bodyPart.getY() * 21);
             if (bodyPartRow == foodRow && bodyPartCol == foodCol) {
                 return true;
             }
