@@ -25,11 +25,13 @@ import java.util.TimerTask;
 public class MainController {
 
     @FXML
+    private StackPane start_screen;
+    @FXML
     private GridPane center_grid;
     @FXML
     private StackPane game_over_screen;
     private MainModel mainModel;
-    private int GRID_SIZE = 21;
+    public static int GRID_SIZE = 21;
 
     private int foodColPos;
     private int foodRowPos;
@@ -40,7 +42,6 @@ public class MainController {
         foodColPos = (int) Math.round(mainModel.getFood().getX() * (GRID_SIZE - 1));
         foodRowPos = (int) Math.round(mainModel.getFood().getY() * (GRID_SIZE - 1));
         GRID_SIZE = center_grid.getRowCount();
-        startGame();
     }
 
     private void restartGame() {
@@ -52,6 +53,7 @@ public class MainController {
 
     private void startGame() {
         game_over_screen.setVisible(false);
+        start_screen.setVisible(false);
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -79,8 +81,8 @@ public class MainController {
         for (Point2D bodyPart : mainModel.getSnakeModel().getBody()) {
             Rectangle rectangle = new Rectangle(cellWidth - 10, cellHeight - 10, Color.GREEN);
             GridPane.setHalignment(rectangle, HPos.CENTER);
-            int col = (int) Math.round(bodyPart.getX() * 21);
-            int row = (int) Math.round(bodyPart.getY() * 21);
+            int col = (int) Math.round(bodyPart.getX() * GRID_SIZE);
+            int row = (int) Math.round(bodyPart.getY() * GRID_SIZE);
             center_grid.add(rectangle, col, row);
         }
     }
@@ -112,6 +114,7 @@ public class MainController {
             case RIGHT, D -> mainModel.getSnakeModel().setDirection(Direction.RIGHT);
             case R -> restartGame();
             case Q -> quitGame();
+            case ENTER -> startGame();
         }
     }
 

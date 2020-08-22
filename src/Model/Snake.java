@@ -5,12 +5,17 @@ import javafx.geometry.Point2D;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Snake model, snake data and its methods
+ */
 public class Snake {
 
     private Direction direction;
     private Point2D lastBodyPart;
 
     private final Queue<Point2D> body;
+
+    public boolean unlockDirection = true;
 
     public Snake() {
         body = new LinkedList<>();
@@ -21,8 +26,9 @@ public class Snake {
     }
 
     public void setDirection(Direction direction) {
-        if (!areOpposites(this.direction, direction)) {
+        if (!areOpposites(this.direction, direction) && unlockDirection) {
             this.direction = direction;
+            unlockDirection = false;
         }
     }
 
@@ -52,17 +58,17 @@ public class Snake {
     }
 
     //todo:: generalize the number 14
-    protected boolean move() {
+    protected boolean moveAStep(int gridSize) {
         Point2D delta = delta();
         Point2D bodyPartOld = body.remove();
-        Point2D newBodyPart = bodyPartOld.add(delta.getX() / 21, delta.getY() / 21);
+        Point2D newBodyPart = bodyPartOld.add(delta.getX() / gridSize, delta.getY() / gridSize);
 
         if (newBodyPart.getX() < 0 || newBodyPart.getX() > 1 || newBodyPart.getY() < 0 || newBodyPart.getY() > 1) {
             System.out.println("Game Over! collision");
             return false;
         }
 
-        if (collides(newBodyPart, body)) {
+        if (collides(newBodyPart, body)) { //collides with itself
             System.out.println("Game Over");
             return false;
         }
@@ -73,21 +79,22 @@ public class Snake {
             newBodyPart = body.remove();
             lastBodyPart = newBodyPart;
         }
+        unlockDirection = true;
         return true;
     }
 
     private boolean collides(Point2D newBodyPart, Queue<Point2D> body) {
         for (Point2D bodyPart : body) {
-            if(newBodyPart.getX() == bodyPart.getX() && newBodyPart.getY() == bodyPart.getY()) {
+            if (newBodyPart.getX() == bodyPart.getX() && newBodyPart.getY() == bodyPart.getY()) {
                 return true;
             }
         }
         return false;
     }
 
-    public void grow() {
+    public void grow(int gridSize) {
         Point2D delta = delta();
-        Point2D newBody = lastBodyPart.add(delta.getX() / 21, delta.getY() / 21);
+        Point2D newBody = lastBodyPart.add(delta.getX() / gridSize, delta.getY() / gridSize);
         body.add(newBody);
         lastBodyPart = newBody;
     }
@@ -96,10 +103,10 @@ public class Snake {
         return body;
     }
 
-    public boolean eats(int foodCol, int foodRow) {
+    public boolean eats(int foodCol, int foodRow, int gridSize) {
         for (Point2D bodyPart : body) {
-            int bodyPartCol = (int) Math.round(bodyPart.getX() * 21);
-            int bodyPartRow = (int) Math.round(bodyPart.getY() * 21);
+            int bodyPartCol = (int) Math.round(bodyPart.getX() * gridSize);
+            int bodyPartRow = (int) Math.round(bodyPart.getY() * gridSize);
             if (bodyPartRow == foodRow && bodyPartCol == foodCol) {
                 return true;
             }
