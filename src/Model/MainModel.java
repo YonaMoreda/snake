@@ -2,15 +2,17 @@ package Model;
 
 import Controller.MainController;
 
+/**
+ * Main model for storing the snake model and its methods
+ */
 public class MainModel {
     private Snake snakeModel;
     private MainController controller;
+    private Food food;
 
     public Food getFood() {
         return food;
     }
-
-    private Food food;
 
     public MainModel(MainController controller) {
         this.snakeModel = new Snake();
@@ -23,13 +25,12 @@ public class MainModel {
     }
 
     public boolean moveSnake() {
-        boolean isGameOver = snakeModel.move();
-        if(snakeModel.eats(controller.getFoodColPos(), controller.getFoodRowPos())) {
-            snakeModel.grow();
+        boolean isGameOver = snakeModel.moveAStep(MainController.GRID_SIZE);
+        if(snakeModel.eats(controller.getFoodColPos(), controller.getFoodRowPos(), MainController.GRID_SIZE)) {
+            snakeModel.grow(MainController.GRID_SIZE);
             food = new Food();
             controller.notifyFoodConsumed();
         }
         return isGameOver;
     }
-
 }
